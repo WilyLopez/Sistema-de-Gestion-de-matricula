@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import mongoose from "mongoose";
 import { entorno } from "./entorno";
 
-// Prisma Client para PostgreSQL
 export const prisma = new PrismaClient({
     log:
         entorno.NODE_ENV === "development"
@@ -10,7 +9,6 @@ export const prisma = new PrismaClient({
             : ["error"],
 });
 
-// Conexión a MongoDB
 export const conectarMongoDB = async (): Promise<void> => {
     try {
         await mongoose.connect(entorno.URI_MONGODB);
@@ -21,7 +19,6 @@ export const conectarMongoDB = async (): Promise<void> => {
     }
 };
 
-// Función para verificar conexión PostgreSQL
 export const conectarPostgreSQL = async (): Promise<void> => {
     try {
         await prisma.$connect();
@@ -32,14 +29,12 @@ export const conectarPostgreSQL = async (): Promise<void> => {
     }
 };
 
-// Cerrar conexiones
 export const desconectarBaseDatos = async (): Promise<void> => {
     await prisma.$disconnect();
     await mongoose.disconnect();
     console.log("🔌 Bases de datos desconectadas");
 };
 
-// Manejo de señales de terminación
 process.on("SIGINT", async () => {
     await desconectarBaseDatos();
     process.exit(0);

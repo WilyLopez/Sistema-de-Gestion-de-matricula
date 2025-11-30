@@ -25,14 +25,13 @@ export const manejadorErrores = (
         return res.status(400).json({
             exito: false,
             mensaje: "Error de validación",
-            errores: err.errors.map((e) => ({
+            errores: err.issues.map((e) => ({
                 campo: e.path.join("."),
                 mensaje: e.message,
             })),
         });
     }
 
-    // Errores de Prisma
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === "P2002") {
             return res.status(409).json({
@@ -41,6 +40,7 @@ export const manejadorErrores = (
                 campo: err.meta?.target,
             });
         }
+
         if (err.code === "P2025") {
             return res.status(404).json({
                 exito: false,

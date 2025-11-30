@@ -1,6 +1,7 @@
-import jwt from "jsonwebtoken";
+import jwt, { Secret, SignOptions } from "jsonwebtoken";
 import { entorno } from "../config/entorno";
 import { RolUsuario } from "@prisma/client";
+import { StringValue } from "ms";
 
 export interface CargaJwt {
     usuarioId: string;
@@ -8,30 +9,22 @@ export interface CargaJwt {
     rol: RolUsuario;
 }
 
-export const generarToken = (carga: CargaJwt): string => {
-    return jwt.sign(carga, entorno.SECRETO_JWT, {
-        expiresIn: entorno.EXPIRACION_JWT,
-    });
+const opcionesAcceso: SignOptions = {
+    expiresIn: entorno.EXPIRACION_JWT as StringValue,
 };
 
-export const generarTokenActualizacion = (carga: CargaJwt): string => {
-    return jwt.sign(carga, entorno.SECRETO_REFRESH_JWT, {
-        expiresIn: entorno.EXPIRACION_REFRESH_JWT,
-    });
+const opcionesRefresh: SignOptions = {
+    expiresIn: entorno.EXPIRACION_REFRESH_JWT as StringValue,
 };
 
-export const verificarToken = (token: string): CargaJwt => {
-    try {
-        return jwt.verify(token, entorno.SECRETO_JWT) as CargaJwt;
-    } catch (error) {
-        throw new Error("Token inválido o expirado");
-    }
-};
+export const generarToken = (carga: CargaJwt): string =>
+    jwt.sign(carga, entorno.SECRETO_JWT as Secret, opcionesAcceso);
 
-export const verificarTokenActualizacion = (token: string): CargaJwt => {
-    try {
-        return jwt.verify(token, entorno.SECRETO_REFRESH_JWT) as CargaJwt;
-    } catch (error) {
-        throw new Error("Token de actualización inválido o expirado");
-    }
-};
+export const generarTokenActualizacion = (carga: CargaJwt): string =>
+    jwt.sign(carga, entorno.SECRETO_REFRESH_JWT as Secret, opcionesRefresh);
+
+export const verificarToken = (token: string): CargaJwt =>
+    jwt.verify(token, entorno.SECRETO_JWT as Secret) as CargaJwt;
+
+export const verificarTokenActualizacion = (token: string): CargaJwt =>
+    jwt.verify(token, entorno.SECRETO_REFRESH_JWT as Secret) as CargaJwt;

@@ -26,7 +26,7 @@ export const manejadorErrores = (
         return res.status(400).json({
             exito: false,
             mensaje: "Error de validación",
-            errores: err.errors.map((e) => ({
+            errores: err.issues.map((e) => ({
                 campo: e.path.join("."),
                 mensaje: e.message,
             })),

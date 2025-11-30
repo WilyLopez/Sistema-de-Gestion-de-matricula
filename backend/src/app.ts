@@ -12,11 +12,11 @@ import {
 
 // Importar rutas
 import rutasAutenticacion from "./modules/autenticacion/autenticacion.rutas";
-// import rutasEstudiantes from './modules/estudiantes/estudiantes.rutas';
-// import rutasMatriculas from './modules/matriculas/matriculas.rutas';
-// import rutasAcademico from './modules/academico/academico.rutas';
-// import rutasApoderados from './modules/apoderados/apoderados.rutas';
-// import rutasUsuarios from './modules/usuarios/usuarios.rutas';
+import rutasEstudiantes from './modules/estudiantes/estudiantes.rutas';
+import rutasMatriculas from './modules/matriculas/matriculas.rutas';
+import rutasAcademico from './modules/academico/academico.rutas';
+import rutasApoderados from './modules/apoderados/apoderados.rutas';
+import rutasUsuarios from './modules/usuarios/usuarios.rutas';
 // import rutasReportes from './modules/reportes/reportes.rutas';
 
 const app: Application = express();
@@ -63,11 +63,11 @@ app.get("/salud", (req, res) => {
 const PREFIJO_API = entorno.PREFIJO_API;
 
 app.use(`${PREFIJO_API}/autenticacion`, rutasAutenticacion);
-// app.use(`${PREFIJO_API}/estudiantes`, rutasEstudiantes);
-// app.use(`${PREFIJO_API}/matriculas`, rutasMatriculas);
-// app.use(`${PREFIJO_API}/academico`, rutasAcademico);
-// app.use(`${PREFIJO_API}/apoderados`, rutasApoderados);
-// app.use(`${PREFIJO_API}/usuarios`, rutasUsuarios);
+app.use(`${PREFIJO_API}/estudiantes`, rutasEstudiantes);
+app.use(`${PREFIJO_API}/matriculas`, rutasMatriculas);
+app.use(`${PREFIJO_API}/academico`, rutasAcademico);
+app.use(`${PREFIJO_API}/apoderados`, rutasApoderados);
+app.use(`${PREFIJO_API}/usuarios`, rutasUsuarios);
 // app.use(`${PREFIJO_API}/reportes`, rutasReportes);
 
 // Manejo de errores

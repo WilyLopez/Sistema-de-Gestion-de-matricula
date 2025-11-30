@@ -8,195 +8,195 @@ datasource db {
 }
 
 // Usuarios del sistema
-model User {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    password  String
-    firstName String   @map("first_name")
-    lastName  String   @map("last_name")
-    role      UserRole @default(SECRETARY)
-    isActive  Boolean  @default(true) @map("is_active")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+model Usuario {
+    id            String     @id @default(uuid())
+    correo        String     @unique
+    contrasena    String
+    nombres       String
+    apellidos     String
+    rol           RolUsuario @default(SECRETARIA)
+    estaActivo    Boolean    @default(true) @map("esta_activo")
+    creadoEn      DateTime   @default(now()) @map("creado_en")
+    actualizadoEn DateTime   @updatedAt @map("actualizado_en")
 
-    enrollmentsCreated Enrollment[] @relation("EnrollmentCreatedBy")
+    matriculasCreadas Matricula[] @relation("MatriculaCreadaPor")
 
-    @@map("users")
+    @@map("usuarios")
 }
 
-enum UserRole {
+enum RolUsuario {
     ADMIN
     DIRECTOR
-    SECRETARY
+    SECRETARIA
 }
 
 // Años académicos
-model AcademicYear {
-    id        String   @id @default(uuid())
-    year      Int      @unique
-    startDate DateTime @map("start_date")
-    endDate   DateTime @map("end_date")
-    isCurrent Boolean  @default(false) @map("is_current")
-    isActive  Boolean  @default(true) @map("is_active")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+model AnioAcademico {
+    id            String   @id @default(uuid())
+    anio          Int      @unique
+    fechaInicio   DateTime @map("fecha_inicio")
+    fechaFin      DateTime @map("fecha_fin")
+    esActual      Boolean  @default(false) @map("es_actual")
+    estaActivo    Boolean  @default(true) @map("esta_activo")
+    creadoEn      DateTime @default(now()) @map("creado_en")
+    actualizadoEn DateTime @updatedAt @map("actualizado_en")
 
-    grades      Grade[]
-    enrollments Enrollment[]
+    grados     Grado[]
+    matriculas Matricula[]
 
-    @@map("academic_years")
+    @@map("anios_academicos")
 }
 
 // Niveles educativos
-enum EducationLevel {
+enum NivelEducativo {
     PRIMARIA
     SECUNDARIA
 }
 
 // Grados
-model Grade {
-    id             String         @id @default(uuid())
-    academicYearId String         @map("academic_year_id")
-    level          EducationLevel
-    gradeNumber    Int            @map("grade_number") // 1, 2, 3, 4, 5, 6
-    enrollmentCost Decimal        @map("enrollment_cost") @db.Decimal(10, 2)
-    monthlyCost    Decimal        @map("monthly_cost") @db.Decimal(10, 2)
-    isActive       Boolean        @default(true) @map("is_active")
-    createdAt      DateTime       @default(now()) @map("created_at")
-    updatedAt      DateTime       @updatedAt @map("updated_at")
+model Grado {
+    id              String         @id @default(uuid())
+    anioAcademicoId String         @map("anio_academico_id")
+    nivel           NivelEducativo
+    numeroGrado     Int            @map("numero_grado") // 1, 2, 3, 4, 5, 6
+    costoMatricula  Decimal        @map("costo_matricula") @db.Decimal(10, 2)
+    costoMensual    Decimal        @map("costo_mensual") @db.Decimal(10, 2)
+    estaActivo      Boolean        @default(true) @map("esta_activo")
+    creadoEn        DateTime       @default(now()) @map("creado_en")
+    actualizadoEn   DateTime       @updatedAt @map("actualizado_en")
 
-    academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
-    sections     Section[]
+    anioAcademico AnioAcademico @relation(fields: [anioAcademicoId], references: [id], onDelete: Cascade)
+    secciones     Seccion[]
 
-    @@unique([academicYearId, level, gradeNumber])
-    @@map("grades")
+    @@unique([anioAcademicoId, nivel, numeroGrado])
+    @@map("grados")
 }
 
 // Secciones
-model Section {
+model Seccion {
     id              String   @id @default(uuid())
-    gradeId         String   @map("grade_id")
-    name            String // A, B, C, etc.
-    maxCapacity     Int      @map("max_capacity")
-    currentCapacity Int      @default(0) @map("current_capacity")
-    isActive        Boolean  @default(true) @map("is_active")
-    createdAt       DateTime @default(now()) @map("created_at")
-    updatedAt       DateTime @updatedAt @map("updated_at")
+    gradoId         String   @map("grado_id")
+    nombre          String // A, B, C, etc.
+    capacidadMaxima Int      @map("capacidad_maxima")
+    capacidadActual Int      @default(0) @map("capacidad_actual")
+    estaActivo      Boolean  @default(true) @map("esta_activo")
+    creadoEn        DateTime @default(now()) @map("creado_en")
+    actualizadoEn   DateTime @updatedAt @map("actualizado_en")
 
-    grade       Grade        @relation(fields: [gradeId], references: [id], onDelete: Cascade)
-    enrollments Enrollment[]
+    grado      Grado       @relation(fields: [gradoId], references: [id], onDelete: Cascade)
+    matriculas Matricula[]
 
-    @@unique([gradeId, name])
-    @@map("sections")
+    @@unique([gradoId, nombre])
+    @@map("secciones")
 }
 
 // Apoderados
-model Guardian {
-    id           String   @id @default(uuid())
-    firstName    String   @map("first_name")
-    lastName     String   @map("last_name")
-    dni          String   @unique
-    relationship String // Padre, Madre, Tutor, etc.
-    phone        String
-    email        String?
-    address      String
-    occupation   String?
-    createdAt    DateTime @default(now()) @map("created_at")
-    updatedAt    DateTime @updatedAt @map("updated_at")
+model Apoderado {
+    id            String   @id @default(uuid())
+    nombres       String
+    apellidos     String
+    dni           String   @unique
+    parentesco    String // Padre, Madre, Tutor, etc.
+    telefono      String
+    correo        String?
+    direccion     String
+    ocupacion     String?
+    creadoEn      DateTime @default(now()) @map("creado_en")
+    actualizadoEn DateTime @updatedAt @map("actualizado_en")
 
-    students Student[]
+    estudiantes Estudiante[]
 
-    @@map("guardians")
+    @@map("apoderados")
 }
 
 // Estudiantes
-model Student {
-    id         String   @id @default(uuid())
-    firstName  String   @map("first_name")
-    lastName   String   @map("last_name")
-    dni        String   @unique
-    birthDate  DateTime @map("birth_date")
-    gender     Gender
-    address    String
-    phone      String?
-    guardianId String   @map("guardian_id")
-    photoUrl   String?  @map("photo_url")
-    isActive   Boolean  @default(true) @map("is_active")
-    createdAt  DateTime @default(now()) @map("created_at")
-    updatedAt  DateTime @updatedAt @map("updated_at")
+model Estudiante {
+    id              String   @id @default(uuid())
+    nombres         String
+    apellidos       String
+    dni             String   @unique
+    fechaNacimiento DateTime @map("fecha_nacimiento")
+    genero          Genero
+    direccion       String
+    telefono        String?
+    apoderadoId     String   @map("apoderado_id")
+    urlFoto         String?  @map("url_foto")
+    estaActivo      Boolean  @default(true) @map("esta_activo")
+    creadoEn        DateTime @default(now()) @map("creado_en")
+    actualizadoEn   DateTime @updatedAt @map("actualizado_en")
 
-    guardian    Guardian     @relation(fields: [guardianId], references: [id])
-    enrollments Enrollment[]
-    documents   Document[]
+    apoderado  Apoderado   @relation(fields: [apoderadoId], references: [id])
+    matriculas Matricula[]
+    documentos Documento[]
 
-    @@map("students")
+    @@map("estudiantes")
 }
 
-enum Gender {
+enum Genero {
     M
     F
 }
 
 // Matrículas
-model Enrollment {
-    id             String           @id @default(uuid())
-    code           String           @unique // Código de matrícula: MAT-2024-0001
-    studentId      String           @map("student_id")
-    academicYearId String           @map("academic_year_id")
-    sectionId      String           @map("section_id")
-    enrollmentType EnrollmentType   @map("enrollment_type")
-    status         EnrollmentStatus @default(PENDING)
-    enrollmentDate DateTime         @default(now()) @map("enrollment_date")
-    totalCost      Decimal          @map("total_cost") @db.Decimal(10, 2)
-    isPaid         Boolean          @default(false) @map("is_paid")
-    paymentDate    DateTime?        @map("payment_date")
-    createdById    String           @map("created_by_id")
-    observations   String?
-    createdAt      DateTime         @default(now()) @map("created_at")
-    updatedAt      DateTime         @updatedAt @map("updated_at")
+model Matricula {
+    id              String          @id @default(uuid())
+    codigo          String          @unique // Código de matrícula: MAT-2024-0001
+    estudianteId    String          @map("estudiante_id")
+    anioAcademicoId String          @map("anio_academico_id")
+    seccionId       String          @map("seccion_id")
+    tipoMatricula   TipoMatricula   @map("tipo_matricula")
+    estado          EstadoMatricula @default(PENDIENTE)
+    fechaMatricula  DateTime        @default(now()) @map("fecha_matricula")
+    costoTotal      Decimal         @map("costo_total") @db.Decimal(10, 2)
+    estaPagado      Boolean         @default(false) @map("esta_pagado")
+    fechaPago       DateTime?       @map("fecha_pago")
+    creadoPorId     String          @map("creado_por_id")
+    observaciones   String?
+    creadoEn        DateTime        @default(now()) @map("creado_en")
+    actualizadoEn   DateTime        @updatedAt @map("actualizado_en")
 
-    student      Student      @relation(fields: [studentId], references: [id])
-    academicYear AcademicYear @relation(fields: [academicYearId], references: [id])
-    section      Section      @relation(fields: [sectionId], references: [id])
-    createdBy    User         @relation("EnrollmentCreatedBy", fields: [createdById], references: [id])
+    estudiante    Estudiante    @relation(fields: [estudianteId], references: [id])
+    anioAcademico AnioAcademico @relation(fields: [anioAcademicoId], references: [id])
+    seccion       Seccion       @relation(fields: [seccionId], references: [id])
+    creadoPor     Usuario       @relation("MatriculaCreadaPor", fields: [creadoPorId], references: [id])
 
-    @@unique([studentId, academicYearId])
-    @@map("enrollments")
+    @@unique([estudianteId, anioAcademicoId])
+    @@map("matriculas")
 }
 
-enum EnrollmentType {
+enum TipoMatricula {
     NUEVA
     RENOVACION
 }
 
-enum EnrollmentStatus {
-    PENDING
-    CONFIRMED
-    CANCELLED
+enum EstadoMatricula {
+    PENDIENTE
+    CONFIRMADA
+    CANCELADA
 }
 
 // Documentos
-model Document {
-    id         String       @id @default(uuid())
-    studentId  String       @map("student_id")
-    type       DocumentType
-    fileName   String       @map("file_name")
-    fileUrl    String       @map("file_url")
-    uploadDate DateTime     @default(now()) @map("upload_date")
-    isVerified Boolean      @default(false) @map("is_verified")
-    createdAt  DateTime     @default(now()) @map("created_at")
-    updatedAt  DateTime     @updatedAt @map("updated_at")
+model Documento {
+    id             String        @id @default(uuid())
+    estudianteId   String        @map("estudiante_id")
+    tipo           TipoDocumento
+    nombreArchivo  String        @map("nombre_archivo")
+    urlArchivo     String        @map("url_archivo")
+    fechaSubida    DateTime      @default(now()) @map("fecha_subida")
+    estaVerificado Boolean       @default(false) @map("esta_verificado")
+    creadoEn       DateTime      @default(now()) @map("creado_en")
+    actualizadoEn  DateTime      @updatedAt @map("actualizado_en")
 
-    student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    estudiante Estudiante @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
 
-    @@map("documents")
+    @@map("documentos")
 }
 
-enum DocumentType {
-    BIRTH_CERTIFICATE
-    DNI_COPY
-    PREVIOUS_CERTIFICATE
-    HEALTH_CERTIFICATE
-    PHOTOS
-    OTHER
+enum TipoDocumento {
+    PARTIDA_NACIMIENTO
+    COPIA_DNI
+    CERTIFICADO_ANTERIOR
+    CERTIFICADO_SALUD
+    FOTOS
+    OTRO
 }

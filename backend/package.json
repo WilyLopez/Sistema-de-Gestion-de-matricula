@@ -12,11 +12,15 @@
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio"
   },
-  "keywords": ["enrollment", "education", "management"],
+  "keywords": [
+    "enrollment",
+    "education",
+    "management"
+  ],
   "author": "Wilian Lopez Vilcarrolero",
   "license": "MIT",
   "dependencies": {
-    "@prisma/client": "^7.0.1",
+    "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
@@ -28,6 +32,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.0.0",
     "morgan": "^1.10.1",
+    "prisma": "^5.22.0",
     "puppeteer": "^24.31.0",
     "zod": "^4.1.13"
   },
@@ -39,7 +44,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.10.1",
-    "prisma": "^7.0.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

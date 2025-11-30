@@ -7,7 +7,7 @@ const esquemaEntorno = z.object({
     NODE_ENV: z
         .enum(["development", "production", "test"])
         .default("development"),
-    PUERTO: z.string().transform(Number).default("3000"),
+    PUERTO: z.string().transform(Number).default(3000),
     PREFIJO_API: z.string().default("/api/v1"),
 
     URL_BASE_DATOS: z.string().min(1, "URL_BASE_DATOS es requerida"),
@@ -24,10 +24,10 @@ const esquemaEntorno = z.object({
 
     URL_FRONTEND: z.string().url().default("http://localhost:3001"),
 
-    VENTANA_LIMITE_MS: z.string().transform(Number).default("900000"),
-    MAX_PETICIONES: z.string().transform(Number).default("100"),
+    VENTANA_LIMITE_MS: z.string().transform(Number).default(900000),
+    MAX_PETICIONES: z.string().transform(Number).default(100),
 
-    TAMANO_MAX_ARCHIVO: z.string().transform(Number).default("5242880"),
+    TAMANO_MAX_ARCHIVO: z.string().transform(Number).default(5242880),
 });
 
 const analizarEntorno = () => {
@@ -36,7 +36,7 @@ const analizarEntorno = () => {
     } catch (error) {
         if (error instanceof z.ZodError) {
             console.error(" Error en variables de entorno:");
-            error.errors.forEach((err) => {
+            error.issues.forEach((err) => {
                 console.error(`  - ${err.path.join(".")}: ${err.message}`);
             });
             process.exit(1);
