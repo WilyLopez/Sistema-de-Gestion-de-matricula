@@ -1,0 +1,202 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// Usuarios del sistema
+model User {
+    id        String   @id @default(uuid())
+    email     String   @unique
+    password  String
+    firstName String   @map("first_name")
+    lastName  String   @map("last_name")
+    role      UserRole @default(SECRETARY)
+    isActive  Boolean  @default(true) @map("is_active")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    enrollmentsCreated Enrollment[] @relation("EnrollmentCreatedBy")
+
+    @@map("users")
+}
+
+enum UserRole {
+    ADMIN
+    DIRECTOR
+    SECRETARY
+}
+
+// Años académicos
+model AcademicYear {
+    id        String   @id @default(uuid())
+    year      Int      @unique
+    startDate DateTime @map("start_date")
+    endDate   DateTime @map("end_date")
+    isCurrent Boolean  @default(false) @map("is_current")
+    isActive  Boolean  @default(true) @map("is_active")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    grades      Grade[]
+    enrollments Enrollment[]
+
+    @@map("academic_years")
+}
+
+// Niveles educativos
+enum EducationLevel {
+    PRIMARIA
+    SECUNDARIA
+}
+
+// Grados
+model Grade {
+    id             String         @id @default(uuid())
+    academicYearId String         @map("academic_year_id")
+    level          EducationLevel
+    gradeNumber    Int            @map("grade_number") // 1, 2, 3, 4, 5, 6
+    enrollmentCost Decimal        @map("enrollment_cost") @db.Decimal(10, 2)
+    monthlyCost    Decimal        @map("monthly_cost") @db.Decimal(10, 2)
+    isActive       Boolean        @default(true) @map("is_active")
+    createdAt      DateTime       @default(now()) @map("created_at")
+    updatedAt      DateTime       @updatedAt @map("updated_at")
+
+    academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+    sections     Section[]
+
+    @@unique([academicYearId, level, gradeNumber])
+    @@map("grades")
+}
+
+// Secciones
+model Section {
+    id              String   @id @default(uuid())
+    gradeId         String   @map("grade_id")
+    name            String // A, B, C, etc.
+    maxCapacity     Int      @map("max_capacity")
+    currentCapacity Int      @default(0) @map("current_capacity")
+    isActive        Boolean  @default(true) @map("is_active")
+    createdAt       DateTime @default(now()) @map("created_at")
+    updatedAt       DateTime @updatedAt @map("updated_at")
+
+    grade       Grade        @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+    enrollments Enrollment[]
+
+    @@unique([gradeId, name])
+    @@map("sections")
+}
+
+// Apoderados
+model Guardian {
+    id           String   @id @default(uuid())
+    firstName    String   @map("first_name")
+    lastName     String   @map("last_name")
+    dni          String   @unique
+    relationship String // Padre, Madre, Tutor, etc.
+    phone        String
+    email        String?
+    address      String
+    occupation   String?
+    createdAt    DateTime @default(now()) @map("created_at")
+    updatedAt    DateTime @updatedAt @map("updated_at")
+
+    students Student[]
+
+    @@map("guardians")
+}
+
+// Estudiantes
+model Student {
+    id         String   @id @default(uuid())
+    firstName  String   @map("first_name")
+    lastName   String   @map("last_name")
+    dni        String   @unique
+    birthDate  DateTime @map("birth_date")
+    gender     Gender
+    address    String
+    phone      String?
+    guardianId String   @map("guardian_id")
+    photoUrl   String?  @map("photo_url")
+    isActive   Boolean  @default(true) @map("is_active")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+
+    guardian    Guardian     @relation(fields: [guardianId], references: [id])
+    enrollments Enrollment[]
+    documents   Document[]
+
+    @@map("students")
+}
+
+enum Gender {
+    M
+    F
+}
+
+// Matrículas
+model Enrollment {
+    id             String           @id @default(uuid())
+    code           String           @unique // Código de matrícula: MAT-2024-0001
+    studentId      String           @map("student_id")
+    academicYearId String           @map("academic_year_id")
+    sectionId      String           @map("section_id")
+    enrollmentType EnrollmentType   @map("enrollment_type")
+    status         EnrollmentStatus @default(PENDING)
+    enrollmentDate DateTime         @default(now()) @map("enrollment_date")
+    totalCost      Decimal          @map("total_cost") @db.Decimal(10, 2)
+    isPaid         Boolean          @default(false) @map("is_paid")
+    paymentDate    DateTime?        @map("payment_date")
+    createdById    String           @map("created_by_id")
+    observations   String?
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime         @updatedAt @map("updated_at")
+
+    student      Student      @relation(fields: [studentId], references: [id])
+    academicYear AcademicYear @relation(fields: [academicYearId], references: [id])
+    section      Section      @relation(fields: [sectionId], references: [id])
+    createdBy    User         @relation("EnrollmentCreatedBy", fields: [createdById], references: [id])
+
+    @@unique([studentId, academicYearId])
+    @@map("enrollments")
+}
+
+enum EnrollmentType {
+    NUEVA
+    RENOVACION
+}
+
+enum EnrollmentStatus {
+    PENDING
+    CONFIRMED
+    CANCELLED
+}
+
+// Documentos
+model Document {
+    id         String       @id @default(uuid())
+    studentId  String       @map("student_id")
+    type       DocumentType
+    fileName   String       @map("file_name")
+    fileUrl    String       @map("file_url")
+    uploadDate DateTime     @default(now()) @map("upload_date")
+    isVerified Boolean      @default(false) @map("is_verified")
+    createdAt  DateTime     @default(now()) @map("created_at")
+    updatedAt  DateTime     @updatedAt @map("updated_at")
+
+    student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+    @@map("documents")
+}
+
+enum DocumentType {
+    BIRTH_CERTIFICATE
+    DNI_COPY
+    PREVIOUS_CERTIFICATE
+    HEALTH_CERTIFICATE
+    PHOTOS
+    OTHER
+}
