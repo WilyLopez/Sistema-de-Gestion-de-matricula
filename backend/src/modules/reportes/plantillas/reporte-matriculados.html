@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Matriculados {{gestion}}</title>
+    <style>
+        body { 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            color: #333;
+            font-size: 10px;
+        }
+        .contenedor {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .cabecera {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .cabecera .logo {
+            width: 80px;
+            height: auto;
+        }
+        .cabecera .info-colegio {
+            text-align: center;
+        }
+        .cabecera .info-colegio h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .cabecera .info-colegio p {
+            margin: 2px 0;
+            font-size: 12px;
+        }
+        .info-reporte {
+            text-align: right;
+            font-size: 12px;
+        }
+        .titulo-reporte {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px;
+        }
+        th, td { 
+            border: 1px solid #ccc; 
+            padding: 8px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .pie-pagina {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 9px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <div class="cabecera">
+            <!-- Puedes reemplazar 'logo.png' por la URL de tu logo -->
+            <img src="https://via.placeholder.com/80" alt="Logo Colegio" class="logo">
+            <div class="info-colegio">
+                <h1>Nombre de la Institución Educativa</h1>
+                <p>Dirección de la Institución, Ciudad</p>
+                <p>Teléfono: (01) 123-4567</p>
+            </div>
+            <div class="info-reporte">
+                <p>Fecha: {{fecha}}</p>
+            </div>
+        </div>
+
+        <div class="titulo-reporte">
+            Reporte de Estudiantes Matriculados - Gestión {{gestion}}
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Código Matrícula</th>
+                    <th>DNI Estudiante</th>
+                    <th>Apellidos y Nombres</th>
+                    <th>Nivel</th>
+                    <th>Grado</th>
+                    <th>Sección</th>
+                    <th>Fecha de Matrícula</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{filas}}
+            </tbody>
+        </table>
+
+        <div class="pie-pagina">
+            <p>Sistema de Gestión de Matrículas</p>
+        </div>
+    </div>
+</body>
+</html>

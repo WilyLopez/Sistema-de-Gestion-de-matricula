@@ -17,7 +17,7 @@ import rutasMatriculas from './modules/matriculas/matriculas.rutas';
 import rutasAcademico from './modules/academico/academico.rutas';
 import rutasApoderados from './modules/apoderados/apoderados.rutas';
 import rutasUsuarios from './modules/usuarios/usuarios.rutas';
-// import rutasReportes from './modules/reportes/reportes.rutas';
+import rutasReportes from './modules/reportes/reportes.rutas';
 
 const app: Application = express();
 
@@ -68,7 +68,7 @@ app.use(`${PREFIJO_API}/matriculas`, rutasMatriculas);
 app.use(`${PREFIJO_API}/academico`, rutasAcademico);
 app.use(`${PREFIJO_API}/apoderados`, rutasApoderados);
 app.use(`${PREFIJO_API}/usuarios`, rutasUsuarios);
-// app.use(`${PREFIJO_API}/reportes`, rutasReportes);
+app.use(`${PREFIJO_API}/reportes`, rutasReportes);
 
 // Manejo de errores
 app.use(manejadorNoEncontrado);
